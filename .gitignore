@@ -1,0 +1,34 @@
+# Virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Environment variables and secrets
+.env
+.env.*
+
+# Research data
+data/papers/*
+!data/papers/.gitkeep
+
+data/vector_store/*
+!data/vector_store/.gitkeep
+
+# Generated reports
+reports/*
+!reports/.gitkeep
+
+# Model cache
+.cache/
+models/
+
+# IDE
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
