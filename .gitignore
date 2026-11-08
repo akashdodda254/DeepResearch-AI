@@ -1,34 +1,71 @@
-# Virtual environments
-venv/
-.venv/
-
-# Python cache
+# ==================================
+# Python
+# ==================================
 __pycache__/
 *.py[cod]
+*.pyo
+*.pyd
 *.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
-# Environment variables and secrets
+# ==================================
+# Virtual Environments
+# ==================================
+venv/
+.venv/
+env/
+
+# ==================================
+# Environment Variables and Secrets
+# ==================================
 .env
 .env.*
+!.env.example
 
-# Research data
+# ==================================
+# Research Papers and Downloaded Data
+# ==================================
 data/papers/*
 !data/papers/.gitkeep
 
 data/vector_store/*
 !data/vector_store/.gitkeep
 
-# Generated reports
+# ==================================
+# Generated Reports
+# ==================================
 reports/*
 !reports/.gitkeep
 
-# Model cache
-.cache/
+# ==================================
+# AI Models and Model Weights
+# ==================================
 models/
+.cache/
+*.safetensors
+*.pt
+*.pth
+*.bin
+*.onnx
 
-# IDE
+# ==================================
+# IDE and Editors
+# ==================================
 .vscode/
+.idea/
+*.swp
+*.swo
 
-# OS files
+# ==================================
+# Operating System Files
+# ==================================
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# ==================================
+# Logs
+# ==================================
+*.log

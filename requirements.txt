@@ -1,0 +1,10 @@
+arxiv
+pymupdf
+pydantic
+requests
+numpy
+sentence-transformers
+faiss-cpu
+rank-bm25
+langgraph
+langchain-core
