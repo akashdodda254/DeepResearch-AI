@@ -22,7 +22,26 @@ class ResearcherAgent:
         self.bm25 = BM25Retriever()
         self.reranker = CrossEncoderReranker()
 
-    def research(self, question: str, max_results: int = 3) -> list:
+    def research(
+        self,
+        question: str,
+        max_results: int = 3,
+        retrieval_top_k: int = 3,
+        rerank_top_k: int = 1
+    ) -> list:
+        """
+        Retrieve academic evidence for a research question.
+
+        Parameters:
+            question: Research question.
+            max_results: Maximum number of arXiv papers to process.
+            retrieval_top_k: Number of chunks retrieved by hybrid search.
+            rerank_top_k: Number of chunks returned after reranking.
+        """
+
+        if max_results < 1 or retrieval_top_k < 1 or rerank_top_k < 1:
+            raise ValueError("All retrieval limits must be at least 1.")
+
         print(f"\nResearching: {question}")
 
         # 1. Search arXiv
@@ -89,15 +108,16 @@ class ResearcherAgent:
 
         retrieved = hybrid.search(
             question,
-            top_k=3
+            top_k=retrieval_top_k
         )
 
         # 6. Cross-encoder reranking
         results = self.reranker.rerank(
-             question,
-             retrieved,
-             top_k=1
+            question,
+            retrieved,
+            top_k=rerank_top_k
         )
+
         return results
 
 

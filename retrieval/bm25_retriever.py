@@ -11,6 +11,13 @@ class BM25Retriever:
         self.tokenized_corpus = []
         self.bm25 = None
 
+    def reset(self):
+        """Clear the existing BM25 index and documents."""
+
+        self.documents = []
+        self.tokenized_corpus = []
+        self.bm25 = None
+        
     def tokenize(self, text: str) -> List[str]:
         """Convert text into lowercase tokens."""
 

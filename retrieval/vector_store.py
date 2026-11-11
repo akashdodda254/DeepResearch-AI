@@ -13,7 +13,13 @@ class FAISSVectorStore:
         self.dimension = dimension
         self.index = faiss.IndexFlatIP(dimension)
         self.metadata = []
+    
+    def reset(self):
+        """Clear all stored embeddings and document metadata."""
 
+        self.index.reset()
+        self.metadata.clear()
+    
     def add_documents(
         self,
         embeddings: np.ndarray,
