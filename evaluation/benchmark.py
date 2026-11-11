@@ -1,8 +1,7 @@
 """
 Benchmark dataset for evaluating academic paper retrieval.
 
-Each benchmark question contains a list of manually identified
-relevant arXiv paper IDs.
+Relevance labels are based on manual review of arXiv abstracts.
 """
 
 BENCHMARK_DATA = [
@@ -19,7 +18,7 @@ BENCHMARK_DATA = [
     {
         "question": (
             "How is retrieval augmented generation applied "
-            "to medical question answering?"
+            "to medical and healthcare question answering?"
         ),
         "relevant_paper_ids": [
             "2309.16035",
@@ -28,8 +27,8 @@ BENCHMARK_DATA = [
     },
     {
         "question": (
-            "How can retrieval augmented generation support "
-            "clinical applications using medical literature?"
+            "What approaches are used to build reliable "
+            "RAG systems for medical and clinical applications?"
         ),
         "relevant_paper_ids": [
             "2412.16701",

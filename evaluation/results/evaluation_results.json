@@ -1,8 +1,8 @@
 {
-    "generated_at": "2026-11-11T18:12:52.509636+00:00",
-    "benchmark_questions": 1,
-    "average_recall_at_5": 1.0,
-    "mean_reciprocal_rank": 1.0,
+    "generated_at": "2026-11-11T18:25:46.277044+00:00",
+    "benchmark_questions": 3,
+    "average_recall_at_5": 0.6666666666666666,
+    "mean_reciprocal_rank": 0.611111111111111,
     "results": [
         {
             "question": "How is retrieval augmented generation used to improve medication information retrieval for healthcare workers?",
@@ -12,10 +12,42 @@
             "retrieved_paper_ids": [
                 "2502.15722",
                 "2309.16035",
-                "2407.18044"
+                "2504.14917"
             ],
             "recall_at_5": 1.0,
             "reciprocal_rank": 1.0
+        },
+        {
+            "question": "How is retrieval augmented generation applied to medical and healthcare question answering?",
+            "relevant_paper_ids": [
+                "2309.16035",
+                "2407.18044"
+            ],
+            "retrieved_paper_ids": [
+                "2411.09213",
+                "2309.16035",
+                "2411.00300",
+                "2504.14917",
+                "2502.15722",
+                "2510.25621"
+            ],
+            "recall_at_5": 0.5,
+            "reciprocal_rank": 0.5
+        },
+        {
+            "question": "What approaches are used to build reliable RAG systems for medical and clinical applications?",
+            "relevant_paper_ids": [
+                "2412.16701",
+                "2504.14917"
+            ],
+            "retrieved_paper_ids": [
+                "2411.09213",
+                "2402.13178",
+                "2504.14917",
+                "2411.00300"
+            ],
+            "recall_at_5": 0.5,
+            "reciprocal_rank": 0.3333333333333333
         }
     ]
 }

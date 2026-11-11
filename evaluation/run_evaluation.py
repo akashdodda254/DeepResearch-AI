@@ -31,7 +31,7 @@ def evaluate_retrieval():
     researcher = ResearcherAgent()
     evaluation_results = []
 
-    for index, benchmark in enumerate(BENCHMARK_DATA[:1], start=1):
+    for index, benchmark in enumerate(BENCHMARK_DATA, start=1):
 
         question = benchmark["question"]
         relevant_ids = benchmark["relevant_paper_ids"]
@@ -43,9 +43,9 @@ def evaluate_retrieval():
 
         retrieved = researcher.research(
             question,
-            max_results=3,
-            retrieval_top_k=10,
-            rerank_top_k=10,
+            max_results=5,
+            retrieval_top_k=15,
+            rerank_top_k=15,
         )
 
         # Convert retrieved chunks into unique paper IDs.

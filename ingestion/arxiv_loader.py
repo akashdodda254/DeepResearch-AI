@@ -28,20 +28,46 @@ class ArxivPaperLoader:
         )
 
     def build_search_query(self, query: str) -> str:
-        """Convert common research questions into focused arXiv queries."""
+        """Convert research questions into focused arXiv queries."""
 
         question = query.lower()
+
+        # Medication information retrieval
+        if any(term in question for term in [
+            "medication",
+            "formulary",
+            "drug information"
+        ]):
+            return (
+                'all:"retrieval augmented generation" '
+                'AND (all:medication OR all:formulary OR all:drug)'
+            )
+
+        # Medical question answering
+        if any(term in question for term in [
+            "question answering",
+            "medical questions"
+        ]):
+            return (
+                'all:"retrieval augmented generation" '
+                'AND (all:"question answering" OR all:medical)'
+            )
+
+        # Clinical and medical applications
+        if any(term in question for term in [
+            "clinical",
+            "clinical applications",
+            "medical literature"
+        ]):
+            return (
+                'all:"retrieval augmented generation" '
+                'AND (all:clinical OR all:PubMed OR all:medical)'
+            )
 
         if "healthcare" in question or "medical" in question:
             return (
                 'all:"retrieval augmented generation" '
-                'AND (all:healthcare OR all:medical '
-                'OR all:clinical)'
-            )
-
-        if "retrieval augmented generation" in question:
-            return (
-                'all:"retrieval augmented generation"'
+                'AND (all:healthcare OR all:medical OR all:clinical)'
             )
 
         return f'all:"{query.strip()}"'
