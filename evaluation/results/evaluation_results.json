@@ -1,0 +1,21 @@
+{
+    "generated_at": "2026-11-11T18:12:52.509636+00:00",
+    "benchmark_questions": 1,
+    "average_recall_at_5": 1.0,
+    "mean_reciprocal_rank": 1.0,
+    "results": [
+        {
+            "question": "How is retrieval augmented generation used to improve medication information retrieval for healthcare workers?",
+            "relevant_paper_ids": [
+                "2502.15722"
+            ],
+            "retrieved_paper_ids": [
+                "2502.15722",
+                "2309.16035",
+                "2407.18044"
+            ],
+            "recall_at_5": 1.0,
+            "reciprocal_rank": 1.0
+        }
+    ]
+}
