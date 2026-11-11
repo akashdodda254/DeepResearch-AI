@@ -16,7 +16,7 @@ class ResearchPaper(BaseModel):
 
 
 class ArxivPaperLoader:
-    """Search and retrieve academic papers from arXiv."""
+    """Search and retrieve relevant academic papers from arXiv."""
 
     def __init__(self, max_results: int = 5):
         self.max_results = max_results
@@ -27,11 +27,34 @@ class ArxivPaperLoader:
             num_retries=3
         )
 
+    def build_search_query(self, query: str) -> str:
+        """Convert common research questions into focused arXiv queries."""
+
+        question = query.lower()
+
+        if "healthcare" in question or "medical" in question:
+            return (
+                'all:"retrieval augmented generation" '
+                'AND (all:healthcare OR all:medical '
+                'OR all:clinical)'
+            )
+
+        if "retrieval augmented generation" in question:
+            return (
+                'all:"retrieval augmented generation"'
+            )
+
+        return f'all:"{query.strip()}"'
+
     def search_papers(self, query: str) -> List[ResearchPaper]:
-        """Search arXiv and return structured paper metadata."""
+        """Search arXiv using a focused research query."""
+
+        search_query = self.build_search_query(query)
+
+        print(f"arXiv search query: {search_query}")
 
         search = arxiv.Search(
-            query=query,
+            query=search_query,
             max_results=self.max_results,
             sort_by=arxiv.SortCriterion.Relevance
         )
@@ -66,7 +89,10 @@ if __name__ == "__main__":
 
     loader = ArxivPaperLoader(max_results=5)
 
-    query = "Retrieval Augmented Generation"
+    query = (
+        "How is Retrieval-Augmented Generation "
+        "used in healthcare?"
+    )
 
     papers = loader.search_papers(query)
 
@@ -81,4 +107,5 @@ if __name__ == "__main__":
         print("Authors:", ", ".join(paper.authors))
         print("Published:", paper.published)
         print("Paper ID:", paper.paper_id)
+        print("Abstract:", paper.abstract[:300])
         print("PDF:", paper.pdf_url)

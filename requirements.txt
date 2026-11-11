@@ -8,3 +8,5 @@ faiss-cpu
 rank-bm25
 langgraph
 langchain-core
+google-genai
+python-dotenv
