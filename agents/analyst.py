@@ -1,5 +1,6 @@
 from agents.llm_client import GeminiLLM
 
+
 class ResearchAnalyst:
     """Analyze retrieved academic evidence."""
 
@@ -11,40 +12,83 @@ class ResearchAnalyst:
         if not evidence:
             return "No relevant research evidence was found."
 
-        evidence_text = ""
+        evidence_sections = []
 
-        for index, item in enumerate(evidence[:1], start=1):
-            evidence_text += (
-                f"\nSOURCE {index}\n"
-                f"Title: {item.get('title', 'Unknown')}\n"
-                f"Paper ID: {item.get('paper_id', 'Unknown')}\n"
-                f"Page: {item.get('page_number', 'Unknown')}\n"
-                f"Content: {item.get('text', '')[:300]}\n"
+        for index, item in enumerate(evidence, start=1):
+            evidence_text = item.get("text", "")
+
+            evidence_sections.append(
+                f"""
+SOURCE {index}
+Title: {item.get('title', 'Unknown')}
+Paper ID: {item.get('paper_id', 'Unknown')}
+Page: {item.get('page_number', 'Unknown')}
+
+Content:
+{evidence_text}
+"""
             )
 
+        evidence_text = "\n".join(evidence_sections)
+
         system_prompt = """
-        You are an academic research analyst.
+You are an academic research analyst specializing in evidence-based
+scientific research.
 
-        Analyze the supplied academic evidence to answer the question.
+Your task is to analyze retrieved academic evidence and answer the
+research question accurately.
 
-        Rules:
-        1. Use only the supplied evidence.
-        2. Do not invent facts, statistics, or citations.
-        3. Identify important findings and limitations.
-        4. If the evidence does not answer the question, say so.
-        5. Cite sources using [Source 1], [Source 2], etc.
-        6. Distinguish direct evidence from interpretation.
-        """
+STRICT RULES:
+
+1. Use only the supplied academic evidence.
+2. Read all supplied evidence before forming conclusions.
+3. Do not invent facts, statistics, methods, or citations.
+4. Extract all relevant findings, including specific methods,
+   strategies, mechanisms, and limitations.
+5. Do not overlook important details present in the evidence.
+6. Cite every evidence-based finding using [Source N].
+7. Distinguish direct evidence from interpretation.
+8. If the evidence does not answer part of the question,
+   explicitly identify the information gap.
+9. Never claim that information is missing if it is present
+   in the supplied evidence.
+10. Avoid repeating the same finding unnecessarily.
+
+STRUCTURE YOUR ANALYSIS:
+
+### 1. Direct Evidence
+Identify findings that directly answer the research question.
+
+### 2. Important Findings
+Explain the relevant methods, approaches, mechanisms,
+or strategies described in the evidence.
+
+### 3. Interpretation
+Explain what the findings suggest without presenting
+unsupported assumptions as facts.
+
+### 4. Limitations
+Identify limitations and unanswered aspects supported
+by the supplied evidence.
+
+### 5. Conclusion
+Provide a concise answer to the research question
+based on the available evidence.
+"""
 
         prompt = f"""
-        RESEARCH QUESTION:
-        {question}
+RESEARCH QUESTION:
+{question}
 
-        RETRIEVED ACADEMIC EVIDENCE:
-        {evidence_text}
+RETRIEVED ACADEMIC EVIDENCE:
+{evidence_text}
 
-        Analyze the evidence and provide a structured synthesis.
-        """
+Analyze ALL the supplied sources and produce a structured,
+evidence-grounded synthesis.
+
+Pay particular attention to specific strategies and methods
+that directly address the research question.
+"""
 
         return self.llm.generate(
             prompt=prompt,
@@ -53,6 +97,7 @@ class ResearchAnalyst:
 
 
 if __name__ == "__main__":
+
     analyst = ResearchAnalyst()
 
     sample_evidence = [

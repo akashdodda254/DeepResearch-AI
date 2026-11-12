@@ -70,7 +70,7 @@ def research_node(state: ResearchState):
         print("Warning: No research evidence retrieved.")
 
     # Keep only the top 3 evidence passages.
-    evidence = evidence[:1]
+    evidence = evidence[:3]
 
     print(f"Collected {len(evidence)} evidence passages.")
     if evidence:

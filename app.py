@@ -30,11 +30,15 @@ question = st.text_area(
     height=120
 )
 
+use_mock = st.checkbox(
+    "Use mock data (no Gemini API calls)",
+    value=True
+)
+
 run_button = st.button(
     "Start Research",
     type="primary"
 )
-
 if run_button:
 
     if not question.strip():
@@ -45,23 +49,41 @@ if run_button:
             with st.spinner(
                 "Researching... This may take a few moments."
             ):
+               initial_state = {
+                "question": question.strip(),
+                "plan": [],
+                "evidence": [],
+                "analysis": "",
+                "report": ""
+            }
+
+            if use_mock:
+                from mock_workflow import mock_invoke
+                result = mock_invoke(initial_state)
+
+            else:
                 research_app = load_research_workflow()
-
-                initial_state = {
-                    "question": question.strip(),
-                    "plan": [],
-                    "evidence": [],
-                    "analysis": "",
-                    "report": ""
-                }
-
                 result = research_app.invoke(initial_state)
 
             st.success("Research completed successfully!")
 
             st.header("Research Report")
-            st.markdown(result["report"])
 
+            st.markdown(
+                """
+                <style>
+                div[data-testid="stMarkdownContainer"] p,
+                div[data-testid="stMarkdownContainer"] li {
+                    font-size: 14px !important;
+                    line-height: 1.7 !important;
+                }
+                </style>
+                """,
+                unsafe_allow_html=True
+            )
+
+            st.markdown(result["report"])
+            
             st.download_button(
                 label="Download Research Report",
                 data=result["report"],
