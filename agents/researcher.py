@@ -27,8 +27,9 @@ class ResearcherAgent:
         question: str,
         max_results: int = 3,
         retrieval_top_k: int = 3,
-        rerank_top_k: int = 1
-    ) -> list:
+        rerank_top_k: int = 1,
+        return_stages: bool = False
+    ):
         """
         Retrieve academic evidence for a research question.
 
@@ -43,6 +44,10 @@ class ResearcherAgent:
             raise ValueError("All retrieval limits must be at least 1.")
 
         print(f"\nResearching: {question}")
+        
+        # Clear previous question's retrieval indexes
+        self.vector_store.reset()
+        self.bm25.reset()
 
         # 1. Search arXiv
         self.arxiv.max_results = max_results
@@ -51,6 +56,11 @@ class ResearcherAgent:
         if not papers:
             print("No papers found.")
             return []
+        
+        candidate_paper_ids = [
+            paper.paper_id.split("v")[0]
+            for paper in papers
+        ]
 
         all_chunks = []
 
@@ -106,19 +116,27 @@ class ResearcherAgent:
             self.bm25
         )
 
-        retrieved = hybrid.search(
+        hybrid_results = hybrid.search(
             question,
             top_k=retrieval_top_k
         )
 
         # 6. Cross-encoder reranking
-        results = self.reranker.rerank(
+        reranked_results = self.reranker.rerank(
             question,
-            retrieved,
+            hybrid_results,
             top_k=rerank_top_k
         )
 
-        return results
+# Return detailed results when stage evaluation is requested.
+        if return_stages:
+            return {
+                "candidate_paper_ids": candidate_paper_ids,
+                "hybrid_results": hybrid_results,
+                "reranked_results": reranked_results,
+            }
+
+        return reranked_results
 
 
 if __name__ == "__main__":

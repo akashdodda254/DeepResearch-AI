@@ -1,24 +1,36 @@
-from agents.llm_client import LocalLLM
+import unittest
+import os
 
-def main():
-    llm = LocalLLM()
+from unittest.mock import patch, MagicMock
 
-    question = (
-        "Explain Retrieval-Augmented Generation in the context "
-        "of academic research in three sentences."
-    )
+from agents.llm_client import GeminiLLM
 
-    print("Connecting to local LLM...")
 
-    answer = llm.generate(question)
+class TestGeminiLLM(unittest.TestCase):
 
-    print("\nMODEL RESPONSE")
-    print("--------------")
-    print(answer)
+    @patch("agents.llm_client.genai.Client")
+    @patch.dict(os.environ, {"GEMINI_API_KEY": "test-api-key"})
+    def test_generate(self, mock_client):
 
-    assert len(answer) > 20
+        mock_response = MagicMock()
+        mock_response.text = "Test Gemini response"
 
-    print("\nLLM CONNECTION TEST PASSED!")
+        mock_client.return_value.models.generate_content.return_value = (
+            mock_response
+        )
+
+        llm = GeminiLLM()
+
+        result = llm.generate("Test prompt")
+
+        self.assertEqual(result, "Test Gemini response")
+
+    @patch.dict(os.environ, {}, clear=True)
+    def test_missing_api_key(self):
+
+        with self.assertRaises(ValueError):
+            GeminiLLM()
+
 
 if __name__ == "__main__":
-    main()
+    unittest.main()
