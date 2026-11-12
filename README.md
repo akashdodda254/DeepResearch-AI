@@ -11,99 +11,112 @@
 
 DeepResearch-AI is an AI-powered research assistant designed to automate the academic research process.
 
-The system aims to transform complex research questions into structured research reports by combining multi-agent orchestration, Retrieval-Augmented Generation (RAG), academic paper retrieval, and evidence-based reasoning.
+It transforms research questions into structured reports by combining multi-agent orchestration, Retrieval-Augmented Generation (RAG), academic paper retrieval, and evidence-based analysis.
 
-Instead of generating answers from language models alone, DeepResearch-AI retrieves relevant academic literature, analyzes supporting evidence, and generates responses grounded in research documents.
+Rather than relying entirely on language model knowledge, the system retrieves relevant academic literature, extracts supporting passages, and uses those passages to generate evidence-grounded research reports.
+
+The project integrates **LangGraph, Gemini, FAISS, BM25, Sentence Transformers, and Cross-Encoder reranking** into a modular research pipeline.
 
 ## Key Features
 
-- **Multi-Agent Research Workflow:** Specialized agents for research planning, question decomposition, information retrieval, analysis, verification, and report generation.
-- **Hybrid Retrieval-Augmented Generation:** Combines FAISS-based semantic search with BM25 keyword retrieval.
-- **Cross-Encoder Reranking:** Improves retrieval relevance by reranking candidate passages.
-- **Academic Paper Retrieval:** Integrates the arXiv API to discover relevant research papers.
-- **PDF Processing:** Extracts academic paper content and metadata using PyMuPDF.
-- **Citation-Grounded Responses:** Connects generated findings to their supporting research sources.
-- **Iterative Research:** Supports additional retrieval when evidence is insufficient.
-- **Research Evaluation:** Evaluates retrieval quality and response reliability using information retrieval metrics.
+- **Multi-Agent Workflow:** Uses specialized agents for research planning, retrieval, analysis, and report generation.
+- **Academic Paper Retrieval:** Searches academic literature through the arXiv API.
+- **PDF Processing:** Extracts research paper content and metadata using PyMuPDF.
+- **Hybrid Retrieval:** Combines FAISS-based semantic search with BM25 keyword retrieval.
+- **Reciprocal Rank Fusion:** Combines semantic and keyword retrieval rankings.
+- **Cross-Encoder Reranking:** Reorders retrieved passages based on query relevance.
+- **Evidence-Grounded Analysis:** Uses retrieved academic passages to support research findings.
+- **Citation-Aware Reports:** Includes source references based on retrieved paper metadata.
+- **Interactive Interface:** Provides a Streamlit application for submitting research questions and viewing results.
+- **Mock Mode:** Allows interface testing without making Gemini API calls.
+- **Retrieval Evaluation:** Measures retrieval performance using Recall@K, MRR, and stage-level metrics.
 
 ## System Architecture
 
-```text
-                 USER QUERY
-                      |
-                      v
-               RESEARCH PLANNER
-                      |
-                      v
-             QUESTION DECOMPOSER
-                      |
-                      v
-                RESEARCH AGENT
-                      |
-                      v
-                 ARXIV API
-                      |
-                      v
-             PAPER DOWNLOAD
-                      |
-                      v
-              PDF PROCESSING
-                  PyMuPDF
-                      |
-                      v
-              DOCUMENT CHUNKING
-                      |
-                      v
-                HYBRID RAG
-                 /       \
-                /         \
-             FAISS        BM25
-                \         /
-                 \       /
-              CROSS-ENCODER
-                 RERANKING
-                      |
-                      v
-               ANALYSIS AGENT
-                      |
-                      v
-             VERIFICATION AGENT
-                      |
-                      v
-                REPORT AGENT
-                      |
-                      v
-             RESEARCH REPORT
+```mermaid
+flowchart TB
+    A(["Research Question"]) --> B["Streamlit Interface"]
+    B --> C["LangGraph Orchestrator"]
+
+    subgraph AGENTS["Multi-Agent Research Workflow"]
+        direction LR
+        D["Planner Agent"] --> E["Researcher Agent"]
+        E --> F["Analyst Agent"]
+        F --> G["Report Writer"]
+    end
+
+    C --> D
+
+    subgraph RETRIEVAL["Academic Retrieval Pipeline"]
+        direction LR
+        H["arXiv API"] --> I["PDF Processing"]
+        I --> J["Chunking & Embeddings"]
+        J --> K["FAISS + BM25"]
+        K --> L["Cross-Encoder Reranking"]
+    end
+
+    E --> H
+    L --> F
+
+    G --> M(["Evidence-Grounded Report"])
+    M --> B
 ```
 
-LangGraph will orchestrate the agents and manage the research workflow.
+### Workflow
+
+1. The user submits a research question through the Streamlit interface.
+2. The Planner Agent creates a research plan.
+3. The Researcher Agent retrieves academic papers and processes their content.
+4. The retrieval pipeline combines semantic and keyword search.
+5. Reciprocal Rank Fusion combines candidate rankings.
+6. A Cross-Encoder reranks the retrieved passages.
+7. The Analyst Agent synthesizes findings from the retrieved evidence.
+8. The Report Writer generates a structured research report.
+9. The final report and supporting evidence are displayed in the application.
+
+LangGraph manages the research workflow and coordinates the individual agents.
 
 ## Technology Stack
 
 | Technology | Purpose |
 |---|---|
-| Python | Core development |
-| LangGraph | Multi-agent orchestration |
-| Ollama | Local language model inference |
+| Python 3.12 | Core development |
+| LangGraph | Agent workflow orchestration |
+| Google Gemini API | Research analysis and report generation |
+| Streamlit | Interactive user interface |
+| Sentence Transformers | Semantic text embeddings |
 | FAISS | Vector similarity search |
 | BM25 | Keyword-based retrieval |
-| Sentence Transformers | Text embeddings |
-| Cross-Encoder | Document reranking |
+| Reciprocal Rank Fusion | Hybrid ranking |
+| Cross-Encoder | Passage reranking |
 | arXiv API | Academic paper retrieval |
 | PyMuPDF | PDF text extraction |
-| Streamlit | User interface |
 | Pydantic | Data validation |
+| Pytest | Automated testing |
 
-## Research Evaluation
+## Retrieval Evaluation
 
-The system will be evaluated using the following metrics:
+The retrieval pipeline is evaluated using a small benchmark of three research questions with manually assigned relevant paper IDs.
 
-| Metric | Purpose |
-|---|---|
-| Recall@5 | Measures relevant documents retrieved in the top five results |
-| Mean Reciprocal Rank (MRR) | Measures the ranking quality of relevant results |
-| Citation Precision | Measures whether generated citations correctly support claims |
-| Answer Faithfulness | Measures whether generated answers remain grounded in retrieved evidence |
+### Evaluation Results
+
+| Metric | Result |
+|---|---:|
+| Candidate Recall | 0.8333 |
+| Hybrid Recall@5 | 0.8333 |
+| Reranked Recall@5 | 0.8333 |
+| Mean Reciprocal Rank (MRR) | 0.6111 |
+
+### Evaluation Methodology
+
+- **Candidate Recall:** Measures how many known relevant papers are found during initial academic paper retrieval.
+- **Hybrid Recall@5:** Measures relevant paper retrieval within the top five hybrid retrieval results.
+- **Reranked Recall@5:** Measures relevant paper retrieval within the top five results after reranking.
+- **MRR:** Measures how highly the first relevant result is ranked.
+
+**Note:** These are preliminary results from a small benchmark. They should not be interpreted as evidence of general research accuracy or clinical reliability.
+
+Citation and faithfulness evaluation are also part of the evaluation framework, with further validation required to establish semantic support between individual claims and their cited evidence.
 
 ## Project Structure
 
@@ -114,36 +127,40 @@ DeepResearch-AI/
 │   ├── planner.py
 │   ├── researcher.py
 │   ├── analyst.py
-│   ├── verifier.py
-│   └── report_generator.py
+│   ├── report_writer.py
+│   └── llm_client.py
+│
+├── graph/
+│   └── research_workflow.py
+│
+├── ingestion/
+│   ├── arxiv_loader.py
+│   ├── pdf_processor.py
+│   └── chunker.py
 │
 ├── retrieval/
-│   ├── embeddings.py
+│   ├── embedding_model.py
 │   ├── vector_store.py
 │   ├── bm25_retriever.py
 │   ├── hybrid_retriever.py
 │   └── reranker.py
 │
-├── ingestion/
-│   ├── arxiv_loader.py
-│   ├── pdf_processor.py
-│   └── chunking.py
-│
 ├── evaluation/
+│   ├── benchmark.py
 │   ├── retrieval_metrics.py
-│   └── response_metrics.py
+│   ├── citation_metrics.py
+│   ├── faithfulness.py
+│   ├── stage_metrics.py
+│   ├── run_evaluation.py
+│   └── results/
 │
-├── graph/
-│   ├── state.py
-│   └── workflow.py
-│
-├── data/
-├── reports/
+├── tests/
 │
 ├── app.py
-├── main.py
-├── config.py
+├── mock_workflow.py
 ├── requirements.txt
+├── .env.example
+├── .gitignore
 └── README.md
 ```
 
@@ -151,61 +168,106 @@ DeepResearch-AI/
 
 ### Prerequisites
 
-- Python 3.12+
+- Python 3.12
 - Git
-- Ollama (for local LLM inference)
+- Google Gemini API key
 
-### Installation
-
-Clone the repository:
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/akashdodda254/DeepResearch-AI.git
 cd DeepResearch-AI
 ```
 
-Create a virtual environment:
+### 2. Create a Virtual Environment
 
 ```bash
-python -m venv venv
+py -3.12 -m venv venv
 ```
 
-Activate it on Windows:
+### 3. Activate the Environment
+
+**Windows PowerShell:**
 
 ```powershell
 .\venv\Scripts\Activate.ps1
 ```
 
-Install dependencies:
+### 4. Install Dependencies
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-*Detailed installation and execution instructions will be added as development progresses.*
+### 5. Configure Environment Variables
 
-## Development Roadmap
+Create a `.env` file in the project root:
 
-- [ ] Project architecture and environment setup
-- [ ] arXiv academic paper ingestion
-- [ ] PDF extraction and document processing
-- [ ] Document chunking and metadata management
-- [ ] FAISS vector retrieval
-- [ ] BM25 keyword retrieval
-- [ ] Hybrid retrieval pipeline
-- [ ] Cross-encoder reranking
-- [ ] Multi-agent implementation using LangGraph
-- [ ] Citation verification and evidence analysis
-- [ ] Research report generation
-- [ ] Retrieval and response evaluation
-- [ ] Streamlit application
-- [ ] Testing and documentation
+```env
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+Replace the placeholder with your own Gemini API key.
+
+**Important:** Never commit your `.env` file or expose your API key publicly.
+
+### 6. Run the Application
+
+```bash
+streamlit run app.py
+```
+
+Open the local URL displayed in your terminal to access the application.
+
+### Mock Mode
+
+The application includes a mock mode that displays sample research results without making Gemini API calls.
+
+This is useful for testing the interface while conserving API usage.
+
+## Testing
+
+The project includes automated tests for selected components, including:
+
+- Retrieval evaluation metrics
+- Citation metric calculations
+- Faithfulness review utilities
+- Gemini client behavior using mocked responses
+- Report generation components
+
+Run the test suite with:
+
+```bash
+python -m pytest tests/ -v
+```
+
+## Current Limitations
+
+- The research benchmark currently contains only three questions.
+- Retrieval performance depends on the academic papers discovered by the arXiv search stage.
+- Citation references are linked to retrieved source metadata; individual claims are not yet automatically verified against their cited passages.
+- Faithfulness evaluation still requires further development and validation.
+- The system is intended for research assistance, not as a substitute for expert review or clinical decision-making.
+
+## Future Improvements
+
+- [ ] Improve research question decomposition.
+- [ ] Expand academic paper retrieval coverage.
+- [ ] Introduce iterative retrieval based on evidence gaps.
+- [ ] Implement automated claim-level citation verification.
+- [ ] Improve answer faithfulness evaluation.
+- [ ] Expand the research benchmark.
+- [ ] Evaluate performance across different research domains.
+- [ ] Improve report quality and evidence traceability.
+- [ ] Deploy the Streamlit application publicly.
 
 ## Project Status
 
-**Currently under active development.**
+**Active Development**
 
-This project is being developed incrementally, with individual components tested before integration into the complete multi-agent research workflow.
+The core research pipeline, multi-agent workflow, hybrid retrieval system, reranking pipeline, evaluation framework, and Streamlit interface have been implemented.
+
+Development is ongoing, with a focus on improving retrieval quality, evidence verification, evaluation, and overall research reliability.
 
 ## Author
 
@@ -215,4 +277,4 @@ GitHub: [@akashdodda254](https://github.com/akashdodda254)
 
 ---
 
-If you find this project interesting, consider giving it a star!
+If you find this project interesting, consider giving it a ⭐ on GitHub!
